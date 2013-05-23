@@ -72,6 +72,10 @@ function Send-HipChatMessage {
         }
 
         $response = Invoke-RestMethod -Method Post -Uri $url -Body $body
+
+        if ($response.Status -ne 'sent') {
+            Write-Warning 'Message not sent'
+        }
     }
 
     end {
