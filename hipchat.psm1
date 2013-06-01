@@ -51,13 +51,20 @@ function Send-HipChatMessage {
         [Parameter(Position=7)]
         [String]$Endpoint = 'https://api.hipchat.com/v1/rooms/message',
         [Parameter(Position=8)]
-        [String]$Token = $script:Token
+        [String]$Token = $script:Token,
+        [Parameter()]
+        [Switch]$Test
 
     )
 
     begin {
         Write-Verbose "Constructing API Url for message send"
-        $url = "$($Endpoint)?format=$ResponseFormat&auth_token=$Token"
+
+        if ($Test) {
+            $url = "$($Endpoint)?format=$ResponseFormat&auth_token=$Token&test=true"
+        } else {
+            $url = "$($Endpoint)?format=$ResponseFormat&auth_token=$Token"
+        }
         Write-Verbose "URL: $url"
 
         if ($Notify) {
