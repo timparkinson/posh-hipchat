@@ -3,10 +3,17 @@
 #-requires version 3.0
 
 #region Helpers
+# TODO: just use -Test params on the functions
 function Test-HipChatMethodAllowed {
+throw "not implemented yet"
 }
 
 function Test-HipChatRate {
+throw "not implemented yet"
+}
+
+function Initialize-HipChat {
+throw "not implemented yet"
 }
 
 #endregion
@@ -81,6 +88,55 @@ function Send-HipChatMessage {
     end {
     }
 }
+
+function New-HipChatRoom {
+throw "not implemented yet"
+}
+
+function Remove-HipChatRoom {
+throw "not implemented yet"
+}
+
+function Get-HipChatHistory {
+throw "not implemented yet"
+}
+
+function Get-HipChatRoomList {
+throw "not implemented yet"
+}
+
+function Get-HipChatTopic {
+throw "not implemented yet"
+}
+
+function Get-HipChatRoom {
+throw "not implemented yet"
+}
 #endregion
 
+#region User API
+function New-HipChatUser {
+throw "not implemented yet"
+}
 
+function Remove-HipChatUser {
+throw "not implemented yet"
+}
+
+function Get-HipChatUserList {
+throw "not implemented yet"
+}
+
+function Get-HipChatUser {
+throw "not implemented yet"
+}
+
+function Restore-HipChatUser {
+throw "not implemented yet"
+}
+
+function Set-HipChatUser {
+throw "not implemented yet"
+}
+
+#endregion
