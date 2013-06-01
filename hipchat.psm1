@@ -9,7 +9,32 @@ throw "not implemented yet"
 }
 
 function Initialize-HipChat {
-throw "not implemented yet"
+    [CmdletBinding(DefaultParameterSetName='File')]
+
+    param(
+        [Parameter(ParameterSetName='File')]
+        $Path=(Join-Path -Path $PSScriptroot -ChildPath 'token.txt'),
+        [Parameter(ParameterSetName='Token')]
+        $Token
+    )
+    
+    begin {}
+
+    process {
+        if (-not $Token) {
+            if (Test-Path -Path $Path) {
+                $Token = Get-Content -Path $Path
+            } else {
+                throw "Token file not found"
+            }
+        }
+
+        $script:Token = $Token
+        
+    }
+
+    end {}
+
 }
 
 
@@ -105,6 +130,7 @@ function Send-HipChatMessage {
 
                 $response = Invoke-RestMethod -Method Post -Uri $url -Body $body
 
+                #TODO: Support XML response too
                 if ($response.Status -ne 'sent') {
                     Write-Warning 'Message not sent'
                 }
