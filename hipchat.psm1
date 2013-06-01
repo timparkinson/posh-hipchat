@@ -3,10 +3,6 @@
 #-requires version 3.0
 
 #region Helpers
-# TODO: just use -Test params on the functions
-function Test-HipChatMethodAllowed {
-throw "not implemented yet"
-}
 
 function Test-HipChatRate {
 throw "not implemented yet"
@@ -15,6 +11,7 @@ throw "not implemented yet"
 function Initialize-HipChat {
 throw "not implemented yet"
 }
+
 
 #endregion
 
@@ -28,8 +25,7 @@ function Send-HipChatMessage {
         [Parameter(Position=0,
                    ValueFromPipeline=$true,
                    Mandatory=$true)]
-        [ValidateLength(1,10000)]
-        [String]$Message,
+        $Message,
         [Parameter(Position=1)]
         [String]$Room,
         [Parameter(Position=2)]
@@ -53,7 +49,9 @@ function Send-HipChatMessage {
         [Parameter(Position=8)]
         [String]$Token = $script:Token,
         [Parameter()]
-        [Switch]$Test
+        [Switch]$Test,
+        [Parameter()]
+        [Switch]$PassThru
 
     )
 
@@ -71,28 +69,48 @@ function Send-HipChatMessage {
             [Int32]$Notify = 1
         }
 
+        $input_objects = @()
+
     }
 
     process {
-        Write-Verbose "Constructing body of request"
-        $body = @{
-            'room_id'=$Room
-            'from'=$From
-            'message'=$Message
-            'message_format'=$MessageFormat
-            'notify'=$Notify
-            'color'=$colour
-            'format'=$ResponseFormat
-        }
-
-        $response = Invoke-RestMethod -Method Post -Uri $url -Body $body
-
-        if ($response.Status -ne 'sent') {
-            Write-Warning 'Message not sent'
+        $input_objects += $Message
+        if ($PassThru) {
+            Write-Output $Message
         }
     }
 
     end {
+        $message_string = $input_objects | Out-String
+        $length = 10000
+        0..[Math]::Floor($message_string.Length/$length) |
+            ForEach-Object {
+                $start = $_ * $length
+                
+                if ($length -gt ($message_string.Length - $start)) {
+                    $length = ($message_string.Length - $start)
+                }
+                $Message = $message_string.Substring($start,$length)
+
+                Write-Verbose "Constructing body of request $_"
+                $body = @{
+                    'room_id'=$Room
+                    'from'=$From
+                    'message'=$Message
+                    'message_format'=$MessageFormat
+                    'notify'=$Notify
+                    'color'=$colour
+                    'format'=$ResponseFormat
+                }
+
+                $response = Invoke-RestMethod -Method Post -Uri $url -Body $body
+
+                if ($response.Status -ne 'sent') {
+                    Write-Warning 'Message not sent'
+                }
+            }
+        
+
     }
 }
 
