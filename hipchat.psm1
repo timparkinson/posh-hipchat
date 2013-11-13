@@ -8,6 +8,14 @@ function Test-HipChatRate {
 throw "not implemented yet"
 }
 
+function Set-HipChatRate {
+throw "not implemented yet"
+}
+
+function Invoke-HipChatMethod {
+throw "not implemented yet"
+}
+
 function Initialize-HipChat {
     [CmdletBinding(DefaultParameterSetName='File')]
 
@@ -179,7 +187,37 @@ throw "not implemented yet"
 }
 
 function Get-HipChatHistory {
-throw "not implemented yet"
+    [CmdletBinding()]
+
+    param(
+        [Parameter(Mandatory=$true,
+                    Position=0)]
+        $Room,
+        [Parameter(Position=1)]
+        $Date = 'recent',
+        [Parameter(Position=2)]
+        $Timezone = 'UTC',
+        [Parameter(Position=3)]
+        $Format = 'json',
+        [Parameter(Position=4)]
+        [String]$Endpoint = 'https://api.hipchat.com/v1/rooms/history',
+        [Parameter(Position=5)]
+        [String]$Token = $script:Token
+    )
+
+    begin {
+        Write-Verbose "Constructing API URL for history"
+        $url = "$($Endpoint)?format=$ResponseFormat&auth_token=$Token&room_id=$Room&date=$Date&timezone=$Timezone&format=$Format"
+
+    }
+
+    process {
+        $response = Invoke-RestMethod -Method GET -Uri $url 
+
+        $response.messages
+    }
+
+    end {}
 }
 
 function Get-HipChatRoomList {
