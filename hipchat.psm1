@@ -52,7 +52,7 @@ function Initialize-HipChat {
 function Send-HipChatMessage {
 <#
 #>
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName='HTMLConversion')]
 
     param(
         [Parameter(Position=0,
@@ -85,8 +85,10 @@ function Send-HipChatMessage {
         [Switch]$Test,
         [Parameter()]
         [Switch]$PassThru,
-        [Parameter()]
-        [Switch]$HTML
+        [Parameter(ParameterSetName='HTMLConversion')]
+        [Switch]$HTML,
+        [Parameter(ParameterSetName='HTMLPreformatted')]
+        [Switch]$HTMLPreformatted
 
     )
 
@@ -142,9 +144,32 @@ function Send-HipChatMessage {
                     Write-Warning 'Message not sent'
                 }
             }
+        } elseif ($HTMLPreformatted) {
+            $input_objects |
+                ForEach-Object {
+                    $Message = $_
+
+                    Write-Verbose "Constructing body of request $_"
+                    $body = @{
+                        'room_id'=$Room
+                        'from'=$From
+                        'message'=$Message
+                        'message_format'='html'
+                        'notify'=$Notify
+                        'color'=$colour
+                        'format'=$ResponseFormat
+                    }
+
+                    $response = Invoke-RestMethod -Method Post -Uri $url -Body $body 
+                
+                    #TODO: Support XML response too
+                    if ($response.Status -ne 'sent') {
+                        Write-Warning 'Message not sent'
+                    }
+                
+                }
         } else {
-            $message_string = ($input_objects | Out-String).trimend()
-             
+            $message_string = $input_objects | Out-String
             $length = 10000
             0..[Math]::Floor($message_string.Length/$length) |
                 ForEach-Object {
