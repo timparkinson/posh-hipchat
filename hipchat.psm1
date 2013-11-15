@@ -143,7 +143,8 @@ function Send-HipChatMessage {
                 }
             }
         } else {
-            $message_string = $input_objects | Out-String
+            $message_string = ($input_objects | Out-String).trimend()
+             
             $length = 10000
             0..[Math]::Floor($message_string.Length/$length) |
                 ForEach-Object {
